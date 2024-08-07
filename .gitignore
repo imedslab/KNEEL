@@ -9,6 +9,7 @@ snapshots_release.tar.xz
 .idea/*
 *~
 
+tmp/
 # Distribution / packaging
 .Python
 build/

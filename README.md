@@ -25,22 +25,41 @@ You need to have docker installed. If you want to use GPU, you must have the GPU
 
 On CPU (slow, but works on all )
 ```
-docker run -it --name kneel_api_cpu -v $(pwd)/tmp:/tmp/:rw -v -p 5000:5000 --ipc=host imeds/kneel:cpu python -u -m kneel.api.app --refine --jit_trace --deploy --device cpu --hf_token --hf_token <YOUR_HUGGING_FACE_TOKEN>
+docker run -it --name kneel_api_cpu --rm \
+  -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host \
+  imeds/kneel:cpu python -u -m kneel.api.app \
+  --refine --jit_trace --deploy --device cpu \
+  --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
 
 On GPU (a lot faster)
 ```
-docker run -it --name kneel_api --rm --runtime=nvidia --gpus all -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host imeds/kneel:gpu python -u -m kneel.api.app --refine --jit_trace --deploy --device cuda:0 --hf_token <YOUR_HUGGING_FACE_TOKEN>
+docker run -it --name kneel_api_gpu --rm --runtime=nvidia --gpus all\
+  -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host \
+  imeds/kneel:gpu python -u -m kneel.api.app \
+  --refine --jit_trace --deploy --device cuda:0 \
+  --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
 
-Just send a POST request with a json having `{"dicom":<RAW_DICOM_IN_BASE_64>}` to `/kneel/predict/bilateral`. To encode a DICOM image in Python,
-just read it as a binary file and then use standard python base64 library: `base64.b64encode(dicom_binary).decode('ascii')`. You can do this as follows (assuming that the microservice runs on `localhost`):
+**Note:** If you want to see the full logs, do
+```
+tail -f tmp/kneel.log
+```
+
+## Making predictions
+
+To make predictions, just send a POST request with a json having `{"dicom":<RAW_DICOM_IN_BASE_64>}` to `/kneel/predict/bilateral`. To encode a DICOM image in Python, read it as a binary file and then use standard python base64 library: `base64.b64encode(dicom_binary).decode('ascii')` to generate a base64 string. You can do this as follows (assuming that the microservice runs on `localhost`):
 
 ```
+import requests
+...
+...
 with open(img_path, "rb") as f:
     data_base64 = base64.b64encode(f.read()).decode('ascii')
-response = requests.post(args.kneel_addr + "/kneel/predict/bilateral", json={'dicom': data_base64})
+response = requests.post("http://localhost/kneel/predict/bilateral", json={'dicom': data_base64})
 ```
+As a result, you will get an array of 16 anatomical landmarks in (x, y) format. Their meaning can be seen in the paper, Figure 1.
+
 ## Customizing 
 If any new dependencies are added, you can recompile the dockers as follows (from the main repo directory)
 ```
@@ -48,15 +67,19 @@ docker buildx build -t imeds/kneel:cpu -f docker/Dockerfile.cpu .
 docker buildx build -t imeds/kneel:gpu -f docker/Dockerfile.gpu .
 ```
 
-## License
-If you use the annotations from this work, you must cite the following paper (Accepted to ICCV 2019 VRMI Workshop)
+## License & citations
+You must cite the following paper (Accepted to ICCV 2019 VRMI Workshop).
 
 ```
-@article{tiulpin2019kneel,
-  title={KNEEL: Knee Anatomical Landmark Localization Using Hourglass Networks},
+@inproceedings{9022083,
   author={Tiulpin, Aleksei and Melekhov, Iaroslav and Saarakkala, Simo},
-  journal={arXiv preprint arXiv:1907.12237},
-  year={2019}
+  booktitle={2019 IEEE/CVF International Conference on Computer Vision Workshop (ICCVW)}, 
+  title={KNEEL: Knee Anatomical Landmark Localization Using Hourglass Networks}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={352-361},
+  doi={10.1109/ICCVW.2019.00046}
 }
 ```
 
