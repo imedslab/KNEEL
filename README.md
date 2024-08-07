@@ -17,6 +17,11 @@ This repo contains an inference package for the models trained in or paper KNEEL
 In this repo, we have included a web-app, which is dockerized, and can be accessed via http protocol.
 
 
+## Before starting
+The very first step to access our model, is getting access to the Hugging Face repo: https://huggingface.co/imeds/kneel. You can request an automatically approved access. Subsequently, in your settings generate a token. More on this can be found in the documentation of HuggingFace: https://huggingface.co/docs/hub/en/security-tokens.
+
+The token is required to get the KNEEL app running.
+
 ## Running the KNEEL app
 
 You need to have docker installed. If you want to use GPU, you must have the GPU runtime installed as well. Below is how you can run the code:
