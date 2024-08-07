@@ -1,3 +1,5 @@
-kneel_gpu.tar
-snapshots_release.tar.xz
-snapshots_release/*
+playground
+*.egg-info
+__pycache__
+*.pyc
+.git/*

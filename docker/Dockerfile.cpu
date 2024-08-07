@@ -1,0 +1,18 @@
+FROM continuumio/miniconda3
+
+MAINTAINER Aleksei Tiulpin, University of Oulu, Version 2.0
+
+RUN mkdir -p /opt/pkg
+WORKDIR /opt/
+
+COPY docker/kneel-cpu-env.yaml .
+RUN conda env create -f kneel-cpu-env.yaml
+SHELL ["conda", "run", "--no-capture-output", "-n", "kneel-cpu", "/bin/bash", "-c"]
+
+COPY kneel /opt/pkg/kneel
+COPY setup.py /opt/pkg/setup.py
+RUN touch /opt/pkg/README.md
+RUN pip install -e /opt/pkg
+
+RUN echo "source activate kneel-cpu" > ~/.bashrc
+ENV PATH /opt/conda/envs/kneel-cpu/bin:$PATH

@@ -1,122 +1,52 @@
 # KNEEL: Hourglass Networks for Knee Anatomical Landmark Localization
 
-(c) Aleksei Tiulpin, University of Oulu, 2019
+<center>
+<img src="pics/landmarks_kl.png" width="800"/>
+</center>
 
-## About
-### Approach
-In this paper we tackled the problem of anatomical landmark localization in knee radiographs at all stages of osteoarthritis. We combined recent advances of landmark localization field and distilled them into a novel modification of hourgalss architecture:
+
+(c) Aleksei Tiulpin, University of Oulu, 2019-2024
+
+## What this repo is about
+This repo contains an inference package for the models trained in or paper KNEEL: https://github.com/Oulu-IMEDS/KNEEL. In that paper, we have developed a neural network architecture, which allows to accurately detect knee anatomical landmarks, and have validated the model on several datasets.
+
 <center>
 <img src="pics/network_arch.png" width="800"/> 
 </center>
 
-To train this model, we propose to use mixup, coutout augmentation and dropout and **no weight decay**. We further propose to use transfer learning from low-cost annotations (knee joint centers on the whole knee radiographs). In the paper, we showed that our transfer learning technique allows to significantly bost the performance. Furthermore, having the models trained to work with the while radiographs and the localized knee joint areas, we were able to build a full pipeline for landmark localization.
-<p align=center>
-<img src="pics/pipeline.png" width="400"/> 
-</p>
+In this repo, we have included a web-app, which is dockerized, and can be accessed via http protocol.
 
-### What's included
 
-The repository includes the codes for training and testing, 
-annotations for the OAI dataset and also the links to the pre-trained models.
 
-## How to install and run
-### Preparing the training data
-Download the OAI baseline images from https://nda.nih.gov/oai/. The access to the images is free and painless.
-You just need to register and provide the information about yourself and agree with the terms of data use.
 
-We provide the script and the annotations for creating the cropped ROIs from the original DICOM images. 
-The annotations are stored in the file `annotations/bf_landmarks_1_0.3.csv`. 
-The script for creating the high cost and the low cost datasets 
-from the raw DICOM data is stored in `scripts/data_stuff/create_train_dataset_from_oai.py`.
+## Running the KNEEL app
 
-Execute the aforementioned script as follows:
+You need to have docker installed. If you want to use GPU, you must have the GPU runtime installed as well. Below is how you can run the code:
+
+On CPU (slow, but works on all )
 ```
-python create_train_dataset_from_oai.py --oai_xrays_path <OAI_PATH> \
-                                        --annotations_path ../annotations \
-                                        --to_save_high_cost_img <path the images corresponding to high-cost annotations> \
-                                        --to_save_low_cost_img <path the images corresponding to low-cost annotations>
-```
-Here, `<OAI_PATH>` should correspond to the folder with OAI baseline images containing the file `contents.csv`.
-
-After you have created the dataset, you can follow the script `run_experiments.sh` and setup the `--data_root` parameter to be
-the same as `<path the images corresponding to high/low-cost annotations>`. 
-
-Note: you will likely see warnings `UserWarning: Incorrect value for Specific Character Set 'ISO_2022_IR_6' - assuming 'ISO 2022 IR 6'
-  _warn_about_invalid_encoding(encoding, patched)`. Don't pay attention to that, as these are the artifacts coming from DICOM metadata.
-
-### Reproducing the experiments from the paper
-All the experiments done in the paper were made with PyTorch 1.1.0 and anaconda.
-To run the experiments, simply copy the content of the folder `hc_experiments` into `hc_experiments_todo`. 
-Set up the necessary environment variables in the file `run_experiments.sh` and then run this script. 
-The code is written to leverage all the available GPU resources running 1 experiment per card.
-
-In order to facilitate reproducibility, conda env file is provided besides the inference Docker files (see below).
-
-## Inference on your data
-
-1. Download the models: `sh fetch_snapshots.sh`
-2. Run the inference as follows (remember to use `nvidia-docker` tag `gpu` in the docker image for cuda support):
-
-```
-docker run -it --name landmark_inference --rm \                                                                                                                                                               ✔  118  18:33:53
-            -v <WORKDIR_LOCATION>:/workdir/ \
-            -v $(pwd)/snapshots_release:/snapshots/:ro \
-            -v <DATA_LOCATION>:/data/:ro --ipc=host \
-            miptmloulu/kneel:cpu python -u inference_new_data.py \
-            --dataset_path /data/ \
-            --dataset <DATASET_NAME> \
-            --workdir /workdir/ \
-            --mean_std_path /snapshots/mean_std.npy\
-            --lc_snapshot_path /snapshots/lext-devbox_2019_07_14_16_04_41 \
-            --hc_snapshot_path /snapshots/lext-devbox_2019_07_14_19_25_40 \
-            --device <DEVICE> \
-            --refine True
-
+docker run -it --name kneel_api_cpu -v $(pwd)/tmp:/tmp/:rw -v -p 5000:5000 --ipc=host imeds/kneel:cpu python -u -m kneel.api.app --refine --jit_trace --deploy --device cpu --hf_token --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
 
-In the command above, you need to replace:
-
-* `<WORKDIR_LOCATION>` - where you will be saving the results.
-* `<DATA_LOCATION>` where the data are located. 
-* `<DATASET_NAME>` the name of the folder containing DICOM images. It should be a sub-folder of `<DATA_LOCATION>`.
-* `<DEVICE>` - `cuda`or `cpu` depending on the platform of execution and on how you built the docker image.
-
-Please note that your NVIDIA driver must be compatible with cuda 10. 
-You can also build the docker files yoruself if you want.
-
-## Running a flask micro-service 
-
-In addition to CLI inference, we also provide a flask micro-service allowing for integration of KNEEL into data processing pipeline.
-We have build support for this for both CPU and GPU. To execute the micro-service on cpu, run the following command:
+On GPU (a lot faster)
 ```
-docker run -it --name landmark_inference --rm \
-              -v $(pwd)/snapshots_release:/snapshots/:ro \
-              -p 5000:5000 \
-              --ipc=host \
-              miptmloulu/kneel:cpu python -u -m kneel.inference.app \
-              --lc_snapshot_path /snapshots/lext-devbox_2019_07_14_16_04_41 \
-              --hc_snapshot_path /snapshots/lext-devbox_2019_07_14_19_25_40 \
-              --refine True --mean_std_path /snapshots/mean_std.npy \
-              --deploy True --device cpu
+docker run -it --name kneel_api --rm --runtime=nvidia --gpus all -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host imeds/kneel:gpu python -u -m kneel.api.app --refine --jit_trace --deploy --device cuda:0 --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
 
-To perform the same on gpu, run the following with `nvidia-docker`:
+Just send a POST request with a json having `{"dicom":<RAW_DICOM_IN_BASE_64>}` to `/kneel/predict/bilateral`. To encode a DICOM image in Python,
+just read it as a binary file and then use standard python base64 library: `base64.b64encode(dicom_binary).decode('ascii')`. You can do this as follows (assuming that the microservice runs on `localhost`):
 
 ```
-nvidia-docker run -it --name landmark_inference --rm \
-            -v $(pwd)/snapshots_release:/snapshots/:ro \
-            -p 5000:5000 \
-            --ipc=host \
-            miptmloulu/kneel:gpu python -u -m kneel.inference.app \
-            --lc_snapshot_path /snapshots/lext-devbox_2019_07_14_16_04_41 \
-            --hc_snapshot_path /snapshots/lext-devbox_2019_07_14_19_25_40 \
-            --refine True --mean_std_path /snapshots/mean_std.npy \
-            --deploy True --device cuda
+with open(img_path, "rb") as f:
+    data_base64 = base64.b64encode(f.read()).decode('ascii')
+response = requests.post(args.kneel_addr + "/kneel/predict/bilateral", json={'dicom': data_base64})
 ```
-
-Now, when the microservice is deployed, it is fairly easy to get the landmarks using a python or nodejs script. 
-Just send a POST request with json having `{"dicom":<RAW_DICOM_IN_BASE_64>}`. To encode a DICOM image in Python,
-just read it as a binary file and then use standard python base64 library: `base64.b64encode(dicom_binary).decode('ascii')`. 
+## Customizing 
+If any new dependencies are added, you can recompile the dockers as follows (from the main repo directory)
+```
+docker buildx build -t imeds/kneel:cpu -f docker/Dockerfile.cpu .
+docker buildx build -t imeds/kneel:gpu -f docker/Dockerfile.gpu .
+```
 
 ## License
 If you use the annotations from this work, you must cite the following paper (Accepted to ICCV 2019 VRMI Workshop)
