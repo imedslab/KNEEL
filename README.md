@@ -17,8 +17,6 @@ This repo contains an inference package for the models trained in or paper KNEEL
 In this repo, we have included a web-app, which is dockerized, and can be accessed via http protocol.
 
 
-
-
 ## Running the KNEEL app
 
 You need to have docker installed. If you want to use GPU, you must have the GPU runtime installed as well. Below is how you can run the code:
