@@ -8,7 +8,7 @@
 (c) Aleksei Tiulpin, University of Oulu, 2019-2024
 
 ## What this repo is about
-This repo contains an inference package for the models trained in or paper KNEEL: https://github.com/Oulu-IMEDS/KNEEL. In that paper, we have developed a neural network architecture, which allows to accurately detect knee anatomical landmarks, and have validated the model on several datasets.
+This repo contains an inference package for the models trained in or paper [KNEEL](https://arxiv.org/abs/1907.12237). In that paper, we have developed a neural network architecture, which allows to accurately detect knee anatomical landmarks, and have validated the model on several datasets.
 
 <center>
 <img src="pics/network_arch.png" width="800"/> 
@@ -18,7 +18,7 @@ In this repo, we have included a web-app, which is dockerized, and can be access
 
 
 ## Before starting
-The very first step to access our model, is getting access to the Hugging Face repo: https://huggingface.co/imeds/kneel. You can request an automatically approved access. Subsequently, in your settings generate a token. More on this can be found in the documentation of HuggingFace: https://huggingface.co/docs/hub/en/security-tokens.
+The very first step to access our model, is getting access to the [HuggingFace repo](https://huggingface.co/imeds/kneel). The access will be approved automatically. Subsequently, in your settings generate a token. More on this can be found in the [HuggingFace documnetation](https://huggingface.co/docs/hub/en/security-tokens). 
 
 The token is required to get the KNEEL app running.
 
