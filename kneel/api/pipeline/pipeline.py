@@ -1,6 +1,5 @@
 import numpy as np
 import logging
-from omegaconf import OmegaConf
 from .annotator import LandmarkAnnotator
 from kneel.model.hf import load_models
 

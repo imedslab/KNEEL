@@ -8,7 +8,7 @@ snapshots_release.tar.xz
 *.so
 .idea/*
 *~
-
+playground/*
 tmp/
 # Distribution / packaging
 .Python

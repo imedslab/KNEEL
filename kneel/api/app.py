@@ -39,7 +39,7 @@ def analyze_knee():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--hf_commit', default='bf5f5f2b5f9703f0b3ae6ff973bcf2650c553980', help='Hugging Face commit')
+    parser.add_argument('--hf_commit', default='73143f5e80435bdf016524e2fef2b9a543968e5b', help='Hugging Face commit')
     parser.add_argument('--hf_cache', default='/tmp/', help="Cache directory for the models")
     parser.add_argument('--hf_token', default="", help="Hugging Face token")
     parser.add_argument('--roi_size_mm', type=int, default=140)

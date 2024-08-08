@@ -59,7 +59,7 @@ import requests
 ...
 with open(img_path, "rb") as f:
     data_base64 = base64.b64encode(f.read()).decode('ascii')
-response = requests.post("http://localhost/kneel/predict/bilateral", json={'dicom': data_base64})
+response = requests.post("http://localhost:5000/kneel/predict/bilateral", json={'dicom': data_base64})
 ```
 As a result, you will get an array of 16 anatomical landmarks in (x, y) format. Their meaning can be seen in the paper, Figure 1.
 
