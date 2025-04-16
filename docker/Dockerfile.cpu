@@ -2,11 +2,9 @@ FROM python:3.12-slim
 
 RUN mkdir -p /opt/pkg
 WORKDIR /opt/
-
-COPY requirements_cpu.txt /opt/pkg/requirements.txt
+COPY requirements_cpu.txt /opt/pkg/requirements_cpu.txt
 
 COPY kneel /opt/pkg/kneel
 COPY setup.py /opt/pkg/setup.py
 RUN touch /opt/pkg/README.md
-RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-RUN pip install --no-cache-dir -e /opt/pkg
+RUN pip install --no-cache-dir -e /opt/pkg[cpu]

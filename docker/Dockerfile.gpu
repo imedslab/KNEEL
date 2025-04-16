@@ -3,7 +3,7 @@ FROM nvidia/cuda:12.5.1-runtime-ubuntu24.04
 RUN mkdir -p /opt/pkg
 WORKDIR /opt/
 
-COPY requirements.txt /opt/pkg/requirements.txt
+COPY requirements_gpu.txt /opt/pkg/requirements_gpu.txt
 
 COPY kneel /opt/pkg/kneel
 COPY setup.py /opt/pkg/setup.py
@@ -14,4 +14,4 @@ RUN apt-get update -q && \
         python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/bin/python
-RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/pkg
+RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/pkg[gpu]
