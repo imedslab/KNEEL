@@ -1,18 +1,18 @@
-FROM continuumio/miniconda3
+FROM python:3.12-slim
 
-MAINTAINER Aleksei Tiulpin, University of Oulu, Version 2.0
+RUN apt-get update -q && \
+    apt-get install -q -y --no-install-recommends ca-certificates curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 
 RUN mkdir -p /opt/pkg
 WORKDIR /opt/
 
-COPY docker/kneel-cpu-env.yaml .
-RUN conda env create -f kneel-cpu-env.yaml
-SHELL ["conda", "run", "--no-capture-output", "-n", "kneel-cpu", "/bin/bash", "-c"]
+COPY requirements_cpu.txt /opt/pkg/requirements.txt
 
 COPY kneel /opt/pkg/kneel
 COPY setup.py /opt/pkg/setup.py
 RUN touch /opt/pkg/README.md
-RUN pip install -e /opt/pkg
-
-RUN echo "source activate kneel-cpu" > ~/.bashrc
-ENV PATH /opt/conda/envs/kneel-cpu/bin:$PATH
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -e /opt/pkg

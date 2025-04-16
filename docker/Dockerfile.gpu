@@ -1,6 +1,5 @@
 FROM nvidia/cuda:12.5.1-runtime-ubuntu24.04
 
-MAINTAINER Aleksei Tiulpin, University of Oulu, Version 2.0
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
