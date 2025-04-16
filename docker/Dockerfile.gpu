@@ -1,59 +1,17 @@
 FROM nvidia/cuda:12.5.1-runtime-ubuntu24.04
 
-
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-
-# hadolint ignore=DL3008
-RUN apt-get update -q && \
-    apt-get install -q -y --no-install-recommends \
-        bzip2 \
-        ca-certificates \
-        git \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender1 \
-        mercurial \
-        openssh-client \
-        procps \
-        subversion \
-        wget \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV PATH /opt/conda/bin:$PATH
-
-CMD [ "/bin/bash" ]
-
-ARG INSTALLER_URL="https://repo.anaconda.com/miniconda/Miniconda3-py312_24.5.0-0-Linux-x86_64.sh"
-ARG SHA256SUM="4b3b3b1b99215e85fd73fb2c2d7ebf318ac942a457072de62d885056556eb83e"
-
-# Below is a standard step from the official Miniconda Dockerfile
-# https://github.com/anaconda/docker-images/blob/main/miniconda3/debian/Dockerfile
-RUN set -x && wget "${INSTALLER_URL}" -O miniconda.sh -q && \
-    echo "${SHA256SUM} miniconda.sh" > shasum && \
-    sha256sum --check --status shasum && \
-    mkdir -p /opt && \
-    bash miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh shasum && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy
-
 RUN mkdir -p /opt/pkg
 WORKDIR /opt/
 
-COPY docker/kneel-gpu-env.yaml .
-RUN conda env create -f kneel-gpu-env.yaml
-SHELL ["conda", "run", "--no-capture-output", "-n", "kneel-gpu", "/bin/bash", "-c"]
+COPY requirements.txt /opt/pkg/requirements.txt
 
 COPY kneel /opt/pkg/kneel
 COPY setup.py /opt/pkg/setup.py
 RUN touch /opt/pkg/README.md
-RUN pip install -e /opt/pkg
-
-RUN echo "source activate kneel-gpu" > ~/.bashrc
-ENV PATH /opt/conda/envs/kneel-gpu/bin:$PATH
+RUN apt-get update -q && \
+    apt-get install -q -y --no-install-recommends \
+        python3-full \
+        python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/bin/python
+RUN python3 -m pip install --no-cache-dir --break-system-packages -e /opt/pkg
