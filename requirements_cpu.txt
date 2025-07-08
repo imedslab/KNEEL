@@ -35,7 +35,7 @@ starlette==0.46.2
 sympy==1.13.1
 tokenizers==0.21.1
 tqdm==4.67.1
-transformers==4.51.3
+transformers==4.52.1
 triton==3.2.0
 typing-inspection==0.4.0
 typing_extensions==4.13.2
