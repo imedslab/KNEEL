@@ -5,7 +5,8 @@
 </center>
 
 
-(c) Aleksei Tiulpin, University of Oulu, 2019-2024
+(c) Aleksei Tiulpin, Weill Cornell Medicine, 2026
+(c) Aleksei Tiulpin, University of Oulu, 2019-2026
 
 ## What this repo is about
 This repo contains an inference package for the models trained in our paper [KNEEL](https://arxiv.org/abs/1907.12237). In that paper, we have developed a neural network architecture, which allows to accurately detect knee anatomical landmarks, and have validated the model on several datasets.
