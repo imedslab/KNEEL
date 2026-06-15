@@ -31,7 +31,7 @@ On CPU (slow, but works on all )
 ```
 docker run -it --name kneel_api_cpu --rm \
   -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host \
-  imeds/kneel:cpu python -u -m kneel.api.app \
+  ghcr.io/imedslab/kneel:cpu python -u -m kneel.api.app \
   --refine --deploy --device cpu \
   --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
@@ -40,7 +40,7 @@ On GPU (a lot faster)
 ```
 docker run -it --name kneel_api_gpu --rm --runtime=nvidia --gpus all\
   -v $(pwd)/tmp:/tmp/:rw -p 5000:5000 --ipc=host \
-  imeds/kneel:gpu python -u -m kneel.api.app \
+  ghcr.io/imedslab/kneel:gpu python -u -m kneel.api.app \
   --refine --deploy --device cuda:0 \
   --hf_token <YOUR_HUGGING_FACE_TOKEN>
 ```
