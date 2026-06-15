@@ -18,7 +18,7 @@ In this repo, we have included a web-app, which is dockerized, and can be access
 
 
 ## Before starting
-The very first step to access our model, is getting access to the [HuggingFace repo](https://huggingface.co/imeds/kneel). The access will be approved automatically. Subsequently, in your settings generate a token. More on this can be found in the [HuggingFace documnetation](https://huggingface.co/docs/hub/en/security-tokens). 
+The very first step to access our model, is getting access to the [HuggingFace repo](https://huggingface.co/imedslab/kneel). The access will be approved automatically. Subsequently, in your settings generate a token. More on this can be found in the [HuggingFace documnetation](https://huggingface.co/docs/hub/en/security-tokens). 
 
 The token is required to get the KNEEL app running.
 
