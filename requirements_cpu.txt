@@ -14,7 +14,7 @@ networkx==3.4.2
 numpy==2.2.4
 opencv-python-headless==4.11.0.86
 packaging==24.2
-pillow==11.2.1
+pillow==12.1.1
 pydantic==2.11.3
 pydantic_core==2.33.1
 pydicom==2.4.4
